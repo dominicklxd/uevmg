@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="css.css">
+</head>
+<body>
+    <div class="top-info-bar">
+        <p> Av. El Retorno 5-130 y Av. Ricardo Sánchez, Ibarra, Ecuador | uevmg@gmail.com</p>
+    </div>
+    <header>
+        <div class="header-top">
+            <img src="unidad-educativa-logo.png" alt="Logo de la Institución" class="logo">
+            <div class="header-text">
+                <h1>Unidad Educativa "Victor Manuel Guzman"</h1>
+                <p>50 años de Educacion Estudiantil</p>
+            </div>
+            <div class="auth-links">
+                <a href="registro.html">Registrarse</a>
+                <a href="login.html">Iniciar Sesión</a>
+            </div>
+        </div>
+        <nav>
+            <ul class="menu">
+                <li><a href="index.html">Inicio</a></li>
+                <li class="dropdown">
+                    <a href="#">Institución</a>
+                    <ul class="submenu">
+                        <li><a href="index.html#autoridades">Autoridades</a></li>
+                        <li><a href="index.html#consejo">Consejo Ejecutivo</a></li>
+                        <li><a href="index.html#historia">Historia</a></li>
+                        <li><a href="index.html#patrono">Patrono</a></li>
+                        <li><a href="index.html#uniforme">Uniforme</a></li>
+                        <li><a href="index.html#himno">Himno</a></li>
+                        <li><a href="index.html#datos">Datos Informativos</a></li>
+                    </ul>
+                </li>
+                <li><a href="index.html#docentes">Docentes</a></li>
+                <li><a href="index.html#dece">DECE</a></li>
+                <li><a href="index.html#recursos">Recursos Didácticos</a></li>
+                <li><a href="index.html#fotos">Fotos</a></li>
+                <li><a href="ubicacion.html">Ubicación</a></li>
+                <li class="dropdown">
+                    <a href="#">Registro</a>
+                    <ul class="submenu">
+                        <li><a href="matriculacion.html" target="_blank">Matriculación</a></li>
+                        <li><a href="requisitos.html" target="_blank">Requisitos</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="auth-container">
+            <div class="auth-box">
+                <h2>Iniciar Sesión</h2>
+                <form>
+                    <label for="login-usuario">Correo Electrónico:</label>
+                    <input type="text" id="login-usuario" name="login-usuario" required>
+                    <label for="login-password">Contraseña:</label>
+                    <input type="password" id="login-password" name="login-password" required>
+                    <button type="submit">Iniciar Sesión</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>UNIDAD EDUCATIVA "VICTOR MANUEL GUZMAN"</h3>
+                <div class="footer-line"></div>
+                <p>Todos los contenidos digitales del portal web, se prohíbe su reproducción total, parcial y traducción a cualquier idioma sin autorización escrita por su titular.</p>
+            </div>
+            <div class="footer-section">
+                <h3>ACCESOS DIRECTOS</h3>
+                <div class="footer-line"></div>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="registro.html">Registro</a></li>
+                    <li><a href="#autoridades">Autoridades</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>CONTACTOS</h3>
+                <div class="footer-line"></div>
+                <p>Av. El Retorno 5-130 y Av. Ricardo Sánchez, Ibarra, Ecuador</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Unidad Educativa Victor Manuel Guzmán © Copyrights 2025 Diseñado por área de Informática</p>
+        </div>
+    </footer>
+    <script type="module">
+        import { iniciarSesion, cerrarSesion } from './database.js';
+
+        const authLinks = document.querySelector('.auth-links');
+        const menu = document.querySelector('.menu');
+        const usuarioActivo = localStorage.getItem('usuarioActivo');
+        const adminEmail = localStorage.getItem('adminEmail');
+
+        // Mostrar "Cerrar Sesión" si el usuario está autenticado
+        if (usuarioActivo) {
+            authLinks.innerHTML = '<a href="#" id="logout">Cerrar Sesión</a>';
+            document.getElementById('logout').addEventListener('click', function () {
+                localStorage.removeItem('usuarioActivo');
+                alert('Sesión cerrada exitosamente.');
+                window.location.href = 'index.html';
+            });
+        } else {
+            document.querySelector('form').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const email = document.getElementById('login-usuario').value;
+                const password = document.getElementById('login-password').value;
+
+                const resultado = iniciarSesion(email, password);
+
+                alert(resultado.message);
+                if (resultado.success) {
+                    localStorage.setItem('usuarioActivo', email);
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+
+        // Mostrar el menú "Administración" solo a los administradores
+        if (usuarioActivo === adminEmail) {
+            const adminMenuItem = document.createElement('li');
+            adminMenuItem.innerHTML = '<a href="verUsuarios.html">Administración</a>';
+            menu.appendChild(adminMenuItem);
+        }
+    </script>
+</body>
+</html>

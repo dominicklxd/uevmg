@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios Registrados</title>
+    <link rel="stylesheet" href="css.css">
+</head>
+<body>
+    <div class="top-info-bar">
+        <p> Av. El Retorno 5-130 y Av. Ricardo Sánchez, Ibarra, Ecuador | uevmg@gmail.com</p>
+    </div>
+    <header>
+        <div class="header-top">
+            <img src="unidad-educativa-logo.png" alt="Logo de la Institución" class="logo">
+            <div class="header-text">
+                <h1>Unidad Educativa "Victor Manuel Guzman"</h1>
+                <p>50 años de Educacion Estudiantil</p>
+            </div>
+            <div class="auth-links">
+                <a href="registro.html">Registrarse</a>
+                <a href="login.html">Iniciar Sesión</a>
+            </div>
+        </div>
+        <nav>
+            <ul class="menu">
+                <li><a href="index.html">Inicio</a></li>
+                <li class="dropdown">
+                    <a href="#">Institución</a>
+                    <ul class="submenu">
+                        <li><a href="index.html#autoridades">Autoridades</a></li>
+                        <li><a href="index.html#consejo">Consejo Ejecutivo</a></li>
+                        <li><a href="index.html#historia">Historia</a></li>
+                        <li><a href="index.html#patrono">Patrono</a></li>
+                        <li><a href="index.html#uniforme">Uniforme</a></li>
+                        <li><a href="index.html#himno">Himno</a></li>
+                        <li><a href="index.html#datos">Datos Informativos</a></li>
+                    </ul>
+                </li>
+                <li><a href="index.html#docentes">Docentes</a></li>
+                <li><a href="index.html#dece">DECE</a></li>
+                <li><a href="index.html#recursos">Recursos Didácticos</a></li>
+                <li><a href="index.html#fotos">Fotos</a></li>
+                <li><a href="ubicacion.html">Ubicación</a></li>
+                <li class="dropdown">
+                    <a href="#">Registro</a>
+                    <ul class="submenu">
+                        <li><a href="matriculacion.html" target="_blank">Matriculación</a></li>
+                        <li><a href="requisitos.html" target="_blank">Requisitos</a></li>
+                    </ul>
+                </li>
+                <li><a href="verUsuarios.html">Administración</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1 class="centered-title">Usuarios Registrados</h1>
+        <div class="table-container">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Correo Electrónico</th>
+                        <th>Contraseña</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usuarios-table">
+                    <!-- Los usuarios se cargarán aquí -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>UNIDAD EDUCATIVA "VICTOR MANUEL GUZMAN"</h3>
+                <p>Todos los contenidos digitales del portal web, se prohíbe su reproducción total, parcial y traducción a cualquier idioma sin autorización escrita por su titular.</p>
+            </div>
+            <div class="footer-section">
+                <h3>ACCESOS DIRECTOS</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="registro.html">Registro</a></li>
+                    <li><a href="#autoridades">Autoridades</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>CONTACTOS</h3>
+                <p>Av. El Retorno 5-130 y Av. Ricardo Sánchez, Ibarra, Ecuador</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Unidad Educativa Victor Manuel Guzmán © Copyrights 2025 Diseñado por área de Informática</p>
+        </div>
+    </footer>
+    <script>
+        const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+        const tableBody = document.getElementById('usuarios-table');
+        const adminEmail = localStorage.getItem('adminEmail'); // Obtener el administrador actual
+
+        function cargarUsuarios() {
+            tableBody.innerHTML = '';
+            if (usuarios.length === 0) {
+                const row = document.createElement('tr');
+                const cell = document.createElement('td');
+                cell.colSpan = 4;
+                cell.textContent = 'No hay usuarios registrados.';
+                row.appendChild(cell);
+                tableBody.appendChild(row);
+            } else {
+                usuarios.forEach((usuario, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${usuario.usuario}</td>
+                        <td>${usuario.email}</td>
+                        <td>${usuario.password}</td>
+                        <td>
+                            ${adminEmail === usuario.email ? '' : `
+                                <button onclick="editarUsuario(${index})">Editar</button>
+                                <button onclick="eliminarUsuario(${index})">Eliminar</button>
+                            `}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        function eliminarUsuario(index) {
+            if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+                usuarios.splice(index, 1);
+                localStorage.setItem('usuarios', JSON.stringify(usuarios));
+                cargarUsuarios();
+            }
+        }
+
+        function editarUsuario(index) {
+            const nuevoUsuario = prompt('Nuevo nombre de usuario:', usuarios[index].usuario);
+            const nuevoEmail = prompt('Nuevo correo electrónico:', usuarios[index].email);
+            const nuevaPassword = prompt('Nueva contraseña:', usuarios[index].password);
+
+            if (nuevoUsuario && nuevoEmail && nuevaPassword) {
+                const usuarioExistente = usuarios.some((u, i) => u.usuario === nuevoUsuario && i !== index);
+                if (usuarioExistente) {
+                    alert('El nombre de usuario ya está en uso. Por favor, elige otro.');
+                    return;
+                }
+                usuarios[index] = { usuario: nuevoUsuario, email: nuevoEmail, password: nuevaPassword };
+                localStorage.setItem('usuarios', JSON.stringify(usuarios));
+                cargarUsuarios();
+            }
+        }
+
+        function asignarAdministrador() {
+            const nuevoAdmin = prompt('Ingrese el correo electrónico del nuevo administrador:');
+            const usuarioExistente = usuarios.find(u => u.email === nuevoAdmin);
+
+            if (!usuarioExistente) {
+                alert('El correo electrónico ingresado no pertenece a ningún usuario registrado.');
+                return;
+            }
+
+            localStorage.setItem('adminEmail', nuevoAdmin);
+            alert(`El usuario con correo ${nuevoAdmin} ahora es administrador.`);
+            cargarUsuarios();
+        }
+
+        // Agregar botón para asignar administrador
+        const adminButton = document.createElement('button');
+        adminButton.textContent = 'Asignar Administrador';
+        adminButton.style.margin = '1rem';
+        adminButton.onclick = asignarAdministrador;
+        document.querySelector('main').prepend(adminButton);
+
+        const authLinks = document.querySelector('.auth-links');
+        const usuarioActivo = localStorage.getItem('usuarioActivo');
+
+        // Mostrar "Cerrar Sesión" si el usuario está autenticado
+        if (usuarioActivo) {
+            authLinks.innerHTML = '<a href="#" id="logout">Cerrar Sesión</a>';
+            document.getElementById('logout').addEventListener('click', function () {
+                localStorage.removeItem('usuarioActivo');
+                alert('Sesión cerrada exitosamente.');
+                window.location.href = 'index.html';
+            });
+        }
+
+        cargarUsuarios();
+    </script>
+</body>
+</html>
